@@ -1,0 +1,27 @@
+{
+    "name" : "node-red-contrib-insert-node",
+    "version": "0.2.9",
+    "description": "Wait several branches to continue flow. Wait for incoming messages from diferent paths to generate only an output message.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mauriciom75/node-red-contrib-insert-node.git"
+    },
+    "keywords": [
+        "node-red",
+        "join",
+        "parallel",
+        "timeout",
+        "merge"
+    ],
+    "node-red" : {
+        "nodes": {
+            "insert-node": "insert-node.js"
+        }
+    },
+    "author": {
+        "name": "Mauricio Margot",
+        "email": "mauriciom7575@gmail.com"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/mauriciom75/node-red-contrib-insert-node"
+}
