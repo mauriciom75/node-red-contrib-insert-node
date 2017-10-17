@@ -2,23 +2,25 @@ module.exports = function(RED) {
     function waitPathsNode(config) {
         RED.nodes.createNode(this,config);
 
-        this.wires = JSON.parse(config.paths);
+        this.toWires = JSON.parse(config.paths);
 
         var node = this;
         
         node.on('input', function(msg) {
             
             //node.error("insert-node timeout!", msg);
-            var wires = this.wires;
+            var oldWires = node.wires;
 
-            var toNode = RED.nodes.getNode(id);
+            // obtengo el nodo al cual saltar
+            var toNode = RED.nodes.getNode(node.toWires);
 
-            node.updateWires(wires);
+            // el proximo nodo será el nodo al cual quiero saltar.
+            node.updateWires(node.toWires);
             
-            
-            toNode.updateWires(wires);
+            // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
+            toNode.updateWires(oldWires);
 
-            node.send(node.pathsContol[correlationId].main_msg);
+            node.send(msg);
             
         });
     }
