@@ -54,7 +54,8 @@ module.exports = function(RED) {
             //console.log("return original_wires:" + JSON.stringify(msg.insertNode[node.varName].original_wires) );
             // el proximo nodo será el nodo al cual quiero saltar.
             node.updateWires(msg.insertNode[node.varName].original_wires);
-                
+
+
             node.send(msg);
             
         });
@@ -91,7 +92,53 @@ module.exports = function(RED) {
             
         });
     }
+    function catchNodeNode(config) {
+        RED.nodes.createNode(this,config);
+
+        this.varName = config.paths;
+
+        var node = this;
+        node.primeraPasada = true;
+        
+        node.on('input', function(msg) {
+            
+            node.primeraPasada = false;
+
+            //console.log("return original_wires:" + JSON.stringify(msg.insertNode[node.varName].original_wires) );
+            // el proximo nodo será el nodo al cual quiero saltar.
+            if (msg.error) msg.insertNode[node.varName].error = msg.error;
+            if (msg._error) msg.insertNode[node.varName]._error = msg._error;
+
+            node.send(msg);
+            
+        });
+    }
+    function throwNodeNode(config) {
+        RED.nodes.createNode(this,config);
+
+        this.varName = config.paths;
+
+        var node = this;
+        node.primeraPasada = true;
+        
+        node.on('input', function(msg) {
+            
+            node.primeraPasada = false;
+
+            if (msg.insertNode[node.varName].error)
+            {
+                node.error(msg.insertNode[node.varName].error.message, msg);
+            }
+            else
+            {
+                node.send(msg);
+            }
+            
+        });
+    }    
     RED.nodes.registerType("insert-node",insertNodeNode);
     RED.nodes.registerType("return-node",returnNodeNode);
     RED.nodes.registerType("declare-node",declareNodeNode);
+    RED.nodes.registerType("catch-node",catchNodeNode);
+    RED.nodes.registerType("throw-node",throwNodeNode);
 }

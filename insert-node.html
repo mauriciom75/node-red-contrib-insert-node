@@ -169,3 +169,120 @@
 <script type="text/x-red" data-help-name="return-node">
     <p>Wait for incoming messages from diferent paths to generate only an output message with the declared variables under <code>msg.paths</code> merged. Each variable under <code>msg.paths</code> corresponds with an input path, and should be initialized on a different input path</p>
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('throw-node',{
+        category: 'function',
+        color: "rgb(153, 153, 255)",
+        defaults: {
+            name: {value:""},
+            paths: {value:'["path_1","other_path"]', required:true},
+            timeout: {value:15000, validate:RED.validators.number()},
+            finalTimeout: {value:60000, validate:RED.validators.number()}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "node-red-contrib-insert-node.png",
+        label: function() {
+            return this.name||"throw-node";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="throw-node">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-paths"><i class="icon-tag"></i> Paths</label>
+        <input type="text" id="node-input-paths" placeholder="Paths">
+    </div>
+    <div class="form-row">
+        <label for="node-input-timeout"><i class="fa fa-clock-o"></i> Timeout</label>
+        <input type="text" id="node-input-timeout" placeholder="Timeout">
+    </div>        
+    <div class="form-row">
+        <label for="node-input-finalTimeout"><i class="fa fa-clock-o"></i> finalTimeout</label>
+        <input type="text" id="node-input-finalTimeout" placeholder="FinalTimeout">        
+    </div>
+    <div class="form-row node-input-rule-container-row">
+        <ol id="node-input-rule-container"></ol>
+        
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="throw-node">
+    <p>Wait for incoming messages from diferent paths to generate only an output message with the declared variables under <code>msg.paths</code> merged. Each variable under <code>msg.paths</code> corresponds with an input path, and should be initialized on a different input path</p>
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('catch-node',{
+        category: 'function',
+        color: "rgb(153, 153, 255)",
+        defaults: {
+            name: {value:""},
+            paths: {value:'["path_1","other_path"]', required:true},
+            timeout: {value:15000, validate:RED.validators.number()},
+            finalTimeout: {value:60000, validate:RED.validators.number()}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "node-red-contrib-insert-node.png",
+        label: function() {
+            return this.name||"catch-node";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="catch-node">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-paths"><i class="icon-tag"></i> Paths</label>
+        <input type="text" id="node-input-paths" placeholder="Paths">
+    </div>
+    <div class="form-row">
+        <label for="node-input-timeout"><i class="fa fa-clock-o"></i> Timeout</label>
+        <input type="text" id="node-input-timeout" placeholder="Timeout">
+    </div>        
+    <div class="form-row">
+        <label for="node-input-finalTimeout"><i class="fa fa-clock-o"></i> finalTimeout</label>
+        <input type="text" id="node-input-finalTimeout" placeholder="FinalTimeout">        
+    </div>
+    <div class="form-row node-input-rule-container-row">
+        <ol id="node-input-rule-container"></ol>
+        
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="catch-node">
+    <p>Wait for incoming messages from diferent paths to generate only an output message with the declared variables under <code>msg.paths</code> merged. Each variable under <code>msg.paths</code> corresponds with an input path, and should be initialized on a different input path</p>
+</script>
