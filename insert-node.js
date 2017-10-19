@@ -18,28 +18,25 @@ module.exports = function(RED) {
             {
                 node.primeraPasada = false;
                 //node.error("insert-node timeout!", msg);
-                console.log("old wires:" + JSON.stringify(node.wires) );
+                //console.log("old wires:" + JSON.stringify(node.wires) );
                 //var oldWires = node.wires;
                 // guardo original
-                table[node.varName].original_wires = node.wires; 
+                node.original_wires = node.wires;
+            }
+            msg.insertNode[node.varName].original_wires = node.original_wires; 
 
-                // el proximo nodo será el nodo al cual quiero saltar.
-                node.updateWires(table[node.varName].wires);
+            // el proximo nodo será el nodo al cual quiero saltar.
+            node.updateWires(msg.insertNode[node.varName].call_wires);
 
-                // si es un solo nodo, ya actualizo el return.
-                if (!table[node.varName].esPath)
-                {
+            // si es un solo nodo, ya actualizo el return.
+            if (!msg.insertNode[node.varName].esPath)
+            {
+                var toNode = RED.nodes.getNode(msg.insertNode[node.varName].call_wires);
 
-                    var toNode = RED.nodes.getNode(table[node.varName].wires);
-
-                    // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
-                    toNode.updateWires(table[node.varName].original_wires);
-
-                }
-                
+                // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
+                toNode.updateWires(msg.insertNode[node.varName].original_wires);
             }
             node.send(msg);
-            
         });
     }
     function returnNodeNode(config) {
@@ -52,14 +49,12 @@ module.exports = function(RED) {
         
         node.on('input', function(msg) {
             
-            if (node.primeraPasada)
-            {
-                node.primeraPasada = false;
+            node.primeraPasada = false;
 
-                // el proximo nodo será el nodo al cual quiero saltar.
-                node.updateWires(table[node.varName].original_wires);
+            //console.log("return original_wires:" + JSON.stringify(msg.insertNode[node.varName].original_wires) );
+            // el proximo nodo será el nodo al cual quiero saltar.
+            node.updateWires(msg.insertNode[node.varName].original_wires);
                 
-            };
             node.send(msg);
             
         });
@@ -75,20 +70,23 @@ module.exports = function(RED) {
         
         node.on('input', function(msg) {
             
-            if (node.primeraPasada)
-            {
-                node.primeraPasada = false;
+            node.primeraPasada = false;
 
-                aux_wires = [node.wires[1]];
-                // en la segunda salida está el nodo a declarar
-                console.log("declare wires:" + JSON.stringify(aux_wires) );
+            aux_wires = [node.wires[1]];
+            // en la segunda salida está el nodo a declarar
+            //console.log("declare wires:" + JSON.stringify(aux_wires) );
 
-                //node.context.flow.set("nodeTo",node.wires);
-                table[node.varName] = {};
-                table[node.varName].wires = aux_wires;
-                table[node.varName].esPath = node.esPath;
+            //node.context.flow.set("nodeTo",node.wires);
+            //table[node.varName] = {};
+            //table[node.varName].wires = aux_wires;
+            //table[node.varName].esPath = node.esPath;
 
-            }
+            if (!msg.insertNode) msg.insertNode = {};
+            msg.insertNode[node.varName] = {};
+            msg.insertNode[node.varName].call_wires = aux_wires;
+            msg.insertNode[node.varName].esPath = node.esPath;
+
+
             node.send([msg]);
             
         });
