@@ -25,18 +25,26 @@ module.exports = function(RED) {
             }
             msg.insertNode[node.varName].original_wires = node.original_wires; 
 
-            // el proximo nodo será el nodo al cual quiero saltar.
-            node.updateWires(msg.insertNode[node.varName].call_wires);
-
-            // si es un solo nodo, ya actualizo el return.
-            if (!msg.insertNode[node.varName].esPath)
+            // no hay declarado un path. salgo por el default ( salida 2).
+            if ( msg.insertNode[node.varName].call_wires[0].length != 0  )
             {
-                var toNode = RED.nodes.getNode(msg.insertNode[node.varName].call_wires);
+                // el proximo nodo será el nodo al cual quiero saltar.
+                node.updateWires(msg.insertNode[node.varName].call_wires);
 
-                // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
-                toNode.updateWires(msg.insertNode[node.varName].original_wires);
+                // si es un solo nodo, ya actualizo el return.
+                if (!msg.insertNode[node.varName].esPath)
+                {
+                    var toNode = RED.nodes.getNode(msg.insertNode[node.varName].call_wires);
+
+                    // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
+                    toNode.updateWires(msg.insertNode[node.varName].original_wires);
+                }
+                node.send([msg,null]);
             }
-            node.send(msg);
+            else
+            {
+                node.send([null,msg]);
+            }
         });
     }
     function returnNodeNode(config) {
@@ -63,7 +71,7 @@ module.exports = function(RED) {
     function declareNodeNode(config) {
         RED.nodes.createNode(this,config);
 
-        this.varName = config.paths;
+        this.salidas = config.salidas;
         this.esPath = Number(config.timeout);
 
         var node = this;
@@ -73,7 +81,6 @@ module.exports = function(RED) {
             
             node.primeraPasada = false;
 
-            aux_wires = [node.wires[1]];
             // en la segunda salida está el nodo a declarar
             //console.log("declare wires:" + JSON.stringify(aux_wires) );
 
@@ -83,12 +90,18 @@ module.exports = function(RED) {
             //table[node.varName].esPath = node.esPath;
 
             if (!msg.insertNode) msg.insertNode = {};
-            msg.insertNode[node.varName] = {};
-            msg.insertNode[node.varName].call_wires = aux_wires;
-            msg.insertNode[node.varName].esPath = node.esPath;
 
+            for (var i = 1 ; i < node.salidas.length ; i++)
+            {
+                varName = node.salidas[i];
+                aux_wires = [node.wires[i]];
 
-            node.send([msg]);
+                msg.insertNode[varName] = {};
+                msg.insertNode[varName].call_wires = aux_wires;
+                msg.insertNode[varName].esPath = node.esPath;
+            }
+
+            node.send([msg]); // envio por la salida 1
             
         });
     }
