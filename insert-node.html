@@ -11,6 +11,10 @@
         },
         inputs:1,
         outputs:2,
+        outputLabels: function (index) {
+            var labels = ["next","default"];
+            return labels[index];
+        },
         icon: "node-red-contrib-insert-node.png",
         label: function() {
             return this.name||"insert-node";
