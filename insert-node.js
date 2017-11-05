@@ -23,26 +23,31 @@ module.exports = function(RED) {
                 // guardo original
                 node.original_wires = node.wires;
             }
-            msg.insertNode[node.varName].original_wires = node.original_wires; 
+
+            // msg.insertNode[node.varName].original_wires = node.original_wires; 
 
             // no hay declarado un path. salgo por el default ( salida 2).
             if ( msg.insertNode[node.varName].call_wires[0].length != 0  )
             {
+
+                console.log("realizo el jump");
                 // el proximo nodo será el nodo al cual quiero saltar.
                 node.updateWires(msg.insertNode[node.varName].call_wires);
 
-                // si es un solo nodo, ya actualizo el return.
-                if (!msg.insertNode[node.varName].esPath)
-                {
-                    var toNode = RED.nodes.getNode(msg.insertNode[node.varName].call_wires);
 
-                    // el nodo al cual salto, tiene que ccontinuar a partir de los siguientes.
-                    toNode.updateWires(msg.insertNode[node.varName].original_wires);
-                }
+                if (!msg.insertNode)
+                    msg.insertNode = {};
+                if (!msg.insertNode.stack)
+                    msg.insertNode.stack = [];
+
+                // en el mensaje dejo en un stack la dirección de respuesta.
+                msg.insertNode.stack.push({original_wires:node.original_wires});
+
                 node.send([msg,null]);
             }
             else
             {
+                console.log("no realizo el jump");
                 node.send([null,msg]);
             }
         });
@@ -59,9 +64,12 @@ module.exports = function(RED) {
             
             node.primeraPasada = false;
 
+
+            var original_wires = msg.insertNode.stack[msg.insertNode.stack.length - 1].original_wires;
             //console.log("return original_wires:" + JSON.stringify(msg.insertNode[node.varName].original_wires) );
             // el proximo nodo será el nodo al cual quiero saltar.
-            node.updateWires(msg.insertNode[node.varName].original_wires);
+
+            node.updateWires(original_wires);
 
 
             node.send(msg);
@@ -117,10 +125,15 @@ module.exports = function(RED) {
             
             node.primeraPasada = false;
 
+            
             //console.log("return original_wires:" + JSON.stringify(msg.insertNode[node.varName].original_wires) );
             // el proximo nodo será el nodo al cual quiero saltar.
-            if (msg.error) msg.insertNode[node.varName].error = msg.error;
-            if (msg._error) msg.insertNode[node.varName]._error = msg._error;
+//            if (msg.error) msg.insertNode[node.varName].error = msg.error;
+//            if (msg._error) msg.insertNode[node.varName]._error = msg._error;
+
+            if (msg.error) msg.insertNode.stack[msg.insertNode.stack.length - 1].error = msg.error;
+            if (msg._error) msg.insertNode.stack[msg.insertNode.stack.length - 1]._error = msg._error;
+
 
             node.send(msg);
             
@@ -138,9 +151,13 @@ module.exports = function(RED) {
             
             node.primeraPasada = false;
 
-            if (msg.insertNode[node.varName].error)
+            var aux = msg.insertNode.stack.pop();
+
+            if ( aux.error )
+            //if (msg.insertNode[node.varName].error)
             {
-                node.error(msg.insertNode[node.varName].error.message, msg);
+                //node.error(msg.insertNode[node.varName].error.message, msg);
+                node.error(aux.error.message, msg);
             }
             else
             {
