@@ -27,7 +27,7 @@ module.exports = function(RED) {
             // msg.insertNode[node.varName].original_wires = node.original_wires; 
 
             // no hay declarado un path. salgo por el default ( salida 2).
-            if ( msg.insertNode[node.varName].call_wires[0].length != 0  )
+            if ( msg.insertNode[node.varName] && msg.insertNode[node.varName].call_wires[0].length != 0  )
             {
 
                 console.log("realizo el jump");
@@ -47,7 +47,7 @@ module.exports = function(RED) {
             }
             else
             {
-                console.log("no realizo el jump");
+                console.log("no realizo el jump, ejecuto default");
                 node.send([null,msg]);
             }
         });
